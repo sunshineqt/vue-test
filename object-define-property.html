@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios@0.12.0/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lodash@4.13.1/lodash.min.js"></script>
+    <style>
+        body{
+            margin: 20px;
+            background: aliceblue;
+        }
+        li{
+            list-style: none;
+        }  
+        .select-info{
+            display: inline-block;
+            width: 60px;
+        }
+        .common-span{
+            display: inline-block;
+            width: 60px;
+        }
+        .list{
+            width: 300px;
+        }
+        .list-head{
+            background: lightpink;
+        }
+    </style>
+</head>
+
+<body onselectstart="return false;">
+    <div id="app1" class="common wrap">
+      <h2>{{news.title}}</h2>
+      <ul>
+          <li></li>
+      </ul>
+    </div>
+   
+    <script>
+        let data = [
+        {
+                title:'新闻',
+                list:['搜索','小米','说的都是','小都是红','手动']
+            },
+            {
+                title:'同学',
+                list:['的的','小米','小明','小红','小组长','大组长','小可','小拉']
+            },
+            {
+                title:'同事',
+                list:['的的','小米','小明','小红']
+            }
+        ];
+     
+        var app = new Vue({
+            el: "#app1",
+            data: {
+                news:data,
+             },
+        
+   
+        })
+    
+    </script>
+</body>
+
+</html>

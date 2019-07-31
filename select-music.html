@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios@0.12.0/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lodash@4.13.1/lodash.min.js"></script>
+    <style>
+        body{
+            margin: 20px;
+            background: aliceblue;
+        }
+        li{
+            list-style: none;
+        }  
+        .select-info{
+            display: inline-block;
+            width: 60px;
+        }
+        .common-span{
+            display: inline-block;
+            width: 60px;
+        }
+        .list{
+            width: 300px;
+        }
+        .list-head{
+            background: lightpink;
+        }
+    </style>
+</head>
+
+<body onselectstart="return false;">
+    <div id="app1" class="common wrap">
+        <div class="baidu">
+            <ul class="list list-head">
+                <li>
+                    <div class="select-info"><input type="checkbox" v-model="isCheckedAll" />全选</div>
+                    <span class="common-span">歌单</span>
+                    <span class="common-span">歌手</span>
+                    <span class="common-span">专辑</span>
+                </li>
+            </ul>
+            <ul class="list list-body">
+                <li v-for="item in songList">
+                    <div class="select-info">
+                        <input type="checkbox" v-model="item.checked" />
+                    </div>
+                    <span class="common-span">{{item.song}}</span>
+                    <span class="common-span">{{item.name}}</span>
+                    <span class="common-span">{{item.album}}</span>
+                </li>
+            </ul>
+            <div class="select">
+                <span class="selectAll">
+                    <span>统计：</span>
+                </span>
+                <div class="others">
+                    <span><em>选中的歌手有：{{selectedSongersLen}}位</em></span>
+                    <span><em>选中专辑有：{{albumSelected}}张</em></span>
+                    <span><em>专辑共有：{{albumAll}}张</em></span>
+                </div>
+            </div>
+        </div>
+    </div>
+   
+    <script>
+        let data = [
+            {
+                id:Date.now()+Math.random(),
+                name:'ss',
+                song:'dss',
+                checked:true,
+                album:10
+            },
+            {
+                id:Date.now()+Math.random(),
+                name:'ss2',
+                song:'d1ss',
+                checked:true,
+                album:101
+            },
+            {
+                id:Date.now()+Math.random(),
+                name:'s2s',
+                song:'d2ss',
+                checked:false,
+                album:102
+            }
+        ];
+     
+        var app = new Vue({
+            el: "#app1",
+            data: {
+                songList:data,
+               index:''
+            },
+            computed: {
+                // 对计算属性的操作：取值-设置值
+                // 只给计算属性一个函数，则默认这个函数是在取值时候触发
+              isCheckedAll: {
+                get(){
+                    return this.songList.every(function(item){
+                        return item.checked
+                    })
+                },
+                set(newValue){
+                    this.songList.forEach(item => item.checked = newValue)
+                }
+              },
+            /* 
+              isCheckedAll() {
+                //   every方法，当数组中每一项都满足某个条件则返回true，只要有一项不满足就返回false
+                let bl = this.songList.every(function(item){
+                    return item.checked
+                })
+                return bl;
+              },
+            */
+              selectedSongersLen() {
+                 let songer = this.songList.filter(item => item.checked)
+                //  选中歌手可能有重复的
+                 return fn(songer).length;
+              },
+              albumAll() {
+                /* 这种写法也可以
+                return this.songList.reduce((n,item2) => {
+                    return n + item2.album
+                },0) 
+                */
+                return this.songList.reduce((n,item2) => n + item2.album,0)
+
+                // 等价于
+                // let n = 0;
+                // this.songList.forEach(function(item){
+                //     n += item.album;
+                // })
+
+              },
+              albumSelected() {
+                  return this.songList.filter(item => item.checked).reduce((n,item2) => n + item2.album,0)
+              }
+            },
+            methods:{
+               
+            }
+        })
+
+        // 数组去重
+        function fn(option){
+            var json = {};
+            var arr = [];
+            option.forEach((item) => {
+                if(!json[item.name]){
+                    json[item.name] = true;
+                    arr.push(item)
+                }
+            })
+            return arr;
+        }
+    
+    </script>
+</body>
+
+</html>

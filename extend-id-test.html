@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios@0.12.0/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lodash@4.13.1/lodash.min.js"></script>
+    <style>
+        .red{
+            background: skyblue;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app" class="common">
+        <my-component></my-component>
+    </div>
+    <template id="myComponent">
+        <div>This is a component!</div>
+    </template>
+    <script>
+        // Vue.component()的第1个参数是标签名称，第2个参数是一个选项对象，使用选项对象的template属性定义组件模板
+       Vue.component('my-component', {
+        // 模板id
+           template:`#myComponent`
+       })
+
+        new Vue({
+            el:'#app'
+        })
+    
+    </script>
+</body>
+
+</html>

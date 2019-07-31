@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios@0.12.0/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lodash@4.13.1/lodash.min.js"></script>
+</head>
+<body>
+    <div id="app">
+        {{test}}
+        <p k-text="test"></p>
+        <p k-html="html"></p>
+        <p>
+            <input type="text" k-model="test">
+        </p>
+        <p>
+            <button @click="onClick">按钮</button>
+        </p>
+    </div>
+    <script src="./kvue.js"></script>
+    <script src="./compile.js"></script>
+    <script>
+        const o = new KVue({
+            el:'#app',
+            data:{
+                test:'asssd',
+                foo:{bar:'bar'},
+                html:'<button>addd</button>'
+            },
+            methods: {
+                onClick() {
+                    console.log('dds')
+                }
+            },
+        });
+        console.log(o.$data.test,'test0');
+        o.$data.test = 'hello kvue';
+        console.log(o.$data.test,'test1');
+
+        console.log(o.$data.foo.bar,'foo.bar0');
+        o.$data.foo.bar = 'hello kvue';
+        console.log(o.$data.foo.bar,'foo.bar1');
+    </script>
+  <!--   <div id="app">
+        <p>您好，<span id="name"></span></p>
+    </div>
+    <script>
+        var obj = {};
+        Object.defineProperty(obj, 'name', {
+            get:function(){
+                return document.getElementById('name').innerHTML;
+            },
+            set:function(inner){
+                document.getElementById('name').innerHTML = inner;
+            }
+        })
+        console.log(obj.name);
+        obj.name='hehehe';
+        console.log(obj.name);
+    </script> -->
+</body>
+</html>

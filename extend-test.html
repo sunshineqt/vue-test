@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios@0.12.0/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lodash@4.13.1/lodash.min.js"></script>
+    <style>
+        .red{
+            background: skyblue;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app" class="common">
+        <parent-component></parent-component>
+    </div>
+   
+    <script>
+        var Child = Vue.extend({
+            template:`<p>this is a child component</p>`
+        })
+
+        // Child组件是在Parent组件中注册的，它只能在Parent组件中使用，确切地说：子组件只能在父组件的template中使用
+        var Parent = Vue.extend({
+            template:`<p>this is a parent component<child-component></child-component></p>`,
+            components: {
+                'child-component':Child
+            }
+        })
+
+        Vue.component('parent-component', Parent)
+
+        new Vue({
+            el:'#app'
+        })
+    
+    </script>
+</body>
+
+</html>
