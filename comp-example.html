@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios@0.12.0/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lodash@4.13.1/lodash.min.js"></script>
+    <style>
+    </style>
+</head>
+
+<body>
+    <div id="app">
+       <div class="container">
+           <div class="form-group">
+               <label>查询功能：</label>
+               <input type="text" class="search-input" v-model="searchQuery" />
+           </div>
+       </div>
+       <div class="container">
+            <simple-grid :data-list="people" :columns="columns" :search-key="searchQuery"></simple-grid>
+       </div>
+    </div>
+
+    <template id="grid-template">
+         <div>
+            <table>
+                <thead>
+                   <tr>
+                        <th v-for="col in columns">
+                            {{col.name}}
+                        </th>
+                        <th>移除</th>
+                    </tr>  
+                </thead>
+                <tbody>
+                    <tr v-for="(item,index) in filteredDataList">
+                        <td v-for="col in columns">
+                            {{item[col.name]}}
+                        </td>
+                        <td class="text-center">
+                            <button @click="del(index)">移除</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+         </div>
+    </template>
+
+    <script>
+        Vue.component('simple-grid', {
+            template:'#grid-template',
+            props:['dataList', 'columns', 'searchKey'],
+            methods:{
+                del:function(index){
+                    this.dataList.splice(index,1)
+                }
+            },
+            computed: {
+                // 通过计算属性实现数据搜索功能
+                filteredDataList: function () {
+                    var self = this
+                    return self.dataList.filter(function (user) {
+                         return user.name.indexOf(self.searchKey) !== -1
+                    })
+                }
+            }
+        })
+        var demo = new Vue({
+            el:'#app',
+            data:{
+                searchQuery:'',
+                columns:[
+                    {name:'name'},
+                    {name:'age'},
+                    {name:'sex'}
+                ],
+                people:[
+                    {name:'ss', age:'22', sex:'male'},
+                    {name:'xx', age:'21', sex:'male'},
+                    {name:'tt', age:'12', sex:'female'},
+                    {name:'qq', age:'18', sex:'male'}
+                ]
+            }
+        })
+    
+    </script>
+
+    <style>
+        table{
+            border: 1px solid gainsboro;
+            width: 500px;
+            margin-top: 20px;
+        }
+        thead{
+            background: pink;
+        }
+        tr{
+            border-bottom: 1px dashed gainsboro;
+            height:40px;
+        }
+        td{
+            width:25%;
+            text-align: center;
+           
+        }
+        button{
+            padding: 2px 20px;
+            border: none;
+            background: lavender;
+            border-radius: 10px;
+        }
+    </style>
+</body>
+
+</html>
