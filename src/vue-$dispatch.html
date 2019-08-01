@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios@0.12.0/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lodash@4.13.1/lodash.min.js"></script>
+    <style>
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <p>message:{{messages}}</p>
+        <child-component></child-component>
+    </div>
+
+    <template id="child-component">
+         <div>
+            <input v-model="msg" />
+            <button @click="notify">dispatch测试</button>
+         </div>
+    </template>
+
+    <script>
+        Vue.component('child-component', {
+           template:'#child-component',
+           data:function(){
+               return {
+                   msg:''
+               }
+           },
+           methods: {
+               notify() {
+                   if(this.msg.trim()){
+                    //  已被弃用
+                       this.$dispatch('child-msg', this.msg);
+                       this.msg = '';
+                   }
+               }
+           },
+        })
+        new Vue({
+            el:'#app',
+            data:{
+                messages:[]
+            },
+            events:{
+                'child-msg':function(msg){
+                    this.messages.push(msg);
+                }
+            }
+        })
+    
+    </script>
+</body>
+
+</html>

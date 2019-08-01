@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios@0.12.0/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lodash@4.13.1/lodash.min.js"></script>
+    <style>
+    </style>
+</head>
+
+<body>
+    <div id="app" class="common">
+        <parent-component></parent-component>    
+    </div>
+    <template id="parent-component">
+        <div>
+           <child-component1></child-component1>
+            <child-component2></child-component2>
+            <button @click="showChildComponentData">显示子组件数据</button>  
+        </div>
+    </template>
+    <template id="child-component1">
+        <h2>child-component1 data {{msg}}</h2>
+    </template>
+    <template id="child-component2">
+         <h2>child-component2 data {{msg}}</h2>
+    </template>
+    <script>
+        Vue.component('parent-component', {
+            template:'#parent-component',
+            components: {
+                'child-component1':{
+                    template:'#child-component1',
+                    data:function(){
+                        return {
+                            msg: 'child-component1'
+                        }
+                    }
+                },
+                'child-component2':{
+                    template:'#child-component2',
+                    data:function(){
+                        return {
+                            msg: 'child-component2'
+                        }
+                    }
+                }
+            },
+            methods: {
+                // 在父组件中，通过this.$children可以访问子组件。
+                // this.$children是一个数组，它包含所有子组件的实例。
+                showChildComponentData: function(){
+                    for(var i= 0; i < this.$children.length; i++) {
+                        alert(this.$children[i].msg)
+                    }
+                }
+            }
+        })
+        new Vue({
+            el:'#app',
+        })
+    
+    </script>
+</body>
+
+</html>

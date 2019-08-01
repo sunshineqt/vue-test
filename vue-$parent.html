@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios@0.12.0/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lodash@4.13.1/lodash.min.js"></script>
+    <style>
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <parent-component></parent-component>    
+    </div>
+
+    <template id="parent-component">
+         <div>
+            <child-component></child-component>
+         </div>
+    </template>
+    <template id="child-component">
+        <div>
+            <h2>child-component</h2>
+            <button @click="showChildComponentDataParent">显示父组件数据</button>  
+        </div>
+    
+    </template>
+
+    <script>
+        Vue.component('parent-component', {
+            template:'#parent-component',
+            components:{
+                'child-component':{
+                    template:'#child-component',
+                    methods: {
+                        showChildComponentDataParent() {
+                            // 尽管可以访问父链上任意的实例，不过子组件应当避免直接依赖父组件的数据，尽量显式地使用 props 传递数据
+                            // 只有组件自己能修改它的状态
+                            console.log(this.$parent)
+                            alert(this.$parent.msg)
+                        }
+                    }
+                }
+            },
+            data:function(){
+                return {
+                    msg:'i am parent component data'
+                }
+            }
+        })
+        new Vue({
+            el:'#app',
+        })
+    
+    </script>
+</body>
+
+</html>
