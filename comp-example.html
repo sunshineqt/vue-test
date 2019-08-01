@@ -26,7 +26,7 @@
             <simple-grid :data-list="people" :columns="columns" :search-key="searchQuery"></simple-grid>
        </div>
     </div>
-
+<!-- 数据查询和移除功能 -->
     <template id="grid-template">
          <div>
             <table>
@@ -41,7 +41,10 @@
                 <tbody>
                     <tr v-for="(item,index) in filteredDataList">
                         <td v-for="col in columns">
-                            {{item[col.name]}}
+                            <span v-if="col.isKey">
+                                <a href="javascript:void(0)" @click="openDialog('edit item '+item[col.name], index)">{{item[col.name]}}</a>
+                            </span>
+                            <span v-else>{{item[col.name]}}</span>
                         </td>
                         <td class="text-center">
                             <button @click="del(index)">移除</button>
@@ -49,16 +52,123 @@
                     </tr>
                 </tbody>
             </table>
+            <div class="container">
+                <button class="btn btn-create" @click="openDialog('create')">创建</button>
+            </div>
+            <modal-dialog :mode="mode" :title="title" :fields="columns" 
+                :item="item" v-on:create-item="createItem"
+                v-on:update-item="updateItem"
+                ></modal-dialog>
          </div>
+    </template>
+<!-- 数据添加和修改功能 -->
+    <template id="dialog-template">
+        <div class="dialogs-container">
+            <div class="dialog" :class="{'active':show}">
+                <div class="dialog-content">
+                    <header class="dialog-header">
+                        <h1 class="dialog-title">{{title}}</h1>
+                    </header>
+                    <div v-for="field in fields" class="form-group">
+                        <label class="label-left">{{field.name}}</label>
+                        <select class="opt-right" v-if="field.dataSource" v-model="item[field.name]" :disabled="mode==2&&field.isKey">
+                            <option v-for="opt in field.dataSource" :value="opt">{{opt}}</option>
+                        </select>
+                        <input class="opt-right" type="text" v-else v-model="item[field.name]" :disabled="mode==2&&field.isKey">
+                    </div>
+                    <footer class="dialog-footer">
+                        <div class="form-group">
+                            <label></label>
+                            <button @click="save">保存</button>
+                            <button @click="close">取消</button>
+                        </div>
+                    </footer>
+                </div>
+            </div>
+            <div class="dialog-overlay"></div>
+        </div>
     </template>
 
     <script>
         Vue.component('simple-grid', {
             template:'#grid-template',
             props:['dataList', 'columns', 'searchKey'],
+            created: function() {
+                const self = this;
+                this.$bus.$on('createItem', this.createItem);
+                this.$bus.$on('updateItem', this.updateItem)
+            },
             methods:{
+                // 移除功能
                 del:function(index){
                     this.dataList.splice(index,1)
+                },
+                openDialog:function(title){
+                    this.title= title;
+                    // 1-新建模式
+                    this.mode = 1;
+                    this.item = {};
+                    // this.$broadcast('showDialog', true)
+                    this.$bus.$emit('showDialog', true)
+                },
+                initItemForUpdate:function(p){
+                    var c = c || {};
+                    for(var i in p){
+                        if(p.hasOwnPerty(i)){
+                            if(typeof p[i] == 'object'){
+                                c[i] = Array.isArray(p[i]) ? [] : {};
+                                deepCopy(p[i], c[i]);
+                            } else {
+                                c[i] = p[i]
+                            }
+                        }
+                    }
+                    return c;
+                },
+                findItemByKey:function(){
+                    var keyColumn = this.keyColumn;
+                    for(var i = 0; i < this.dataList.length; i++){
+                        if(this.dataList[i][keyColumn] == key){
+                            return this.dataList[i]
+                        }
+                    }
+                },
+                itemExists:function(keyColumn){
+                    for(var i = 0; i< this.dataList.length; i++){
+                        if(this.item[keyColumn] == this.dataList[i][keyColumn]){
+                            return true;
+                        }
+                        return false;
+                    }
+                },
+                createItem:function(){
+                    var keyColumn = this.getKeyColumn();
+                    if(!this.itemExists(keyColumn)){
+                        this.dataList.push(this.item);
+                        // this.$broadcast('showDialog', false);
+                        console.log(this.dataList,'this.dataList')
+                        this.$bus.$emit('showDialog', false);
+                        this.item = {};
+                    } else {
+                        alert('已存在')
+                    }
+                    // this.dataList.push(this.item);
+                    // this.$broadcast('showDialog', false);
+                    // this.item = {};
+                },
+                updateItem:function(){
+                    var keyColumn = this.keyColumn;
+                    for(var i = 0; i< this.dataList.length; i++){
+                        if(this.dataList[i][keyColumn] === this.item[keyColumn]){
+                            for(var j in this.item){
+                                this.dataList[i][j] = this.ietm[j]
+                            }
+                            break;
+                        }
+                        // this.$broadcast('showDialog', false)
+                        this.$bus.$emit('showDialog', false)
+                        this.item = {}
+                    }
                 }
             },
             computed: {
@@ -69,16 +179,67 @@
                          return user.name.indexOf(self.searchKey) !== -1
                     })
                 }
+            },
+            data:function(){
+                return {
+                    mode:0,
+                    item:{},
+                    title:''
+                }
+            },
+            components: {
+                'modal-dialog':{
+                    template:'#dialog-template',
+                    data:function(){
+                        return {
+                            show:false
+                        }
+                    },
+                    props:['mode', 'title', 'fields', 'item'],
+                    created: function() {
+                        console.log('55555')
+                        const self = this;
+                        this.$bus.$on('showDialog', function(show){
+                            console.log(show,'show')
+                            self.show = show;
+                            console.log(self.show,'00')
+                        })
+                    },
+                    mounted () {
+                        console.log(this.show,'show999')
+                    },
+                    methods: {
+                        save() {
+                            console.log(this.mode,'mode')
+                            if(this.mode == 1){
+                                // this.$dispatch('create-item');
+                                this.$bus.$emit('createItem');
+                            }else if(this.mode==2){
+                                // this.$dispatch('update-item');
+                                this.$bus.$emit('updateItem');
+                            }
+                        },
+                        close(){
+                            this.show = false;
+                        }
+                    },
+                    // events:{
+                    //     'showDialog':function(show){
+                    //         this.show = show;
+                    //     }
+                    // }
+                }
             }
         })
+        Vue.prototype.$bus = new Vue();
         var demo = new Vue({
             el:'#app',
             data:{
                 searchQuery:'',
                 columns:[
-                    {name:'name'},
+                    {name:'name', isKey:true},
                     {name:'age'},
-                    {name:'sex'}
+                    {name:'sex', dataSource:['male', 'female']}
                 ],
                 people:[
                     {name:'ss', age:'22', sex:'male'},
@@ -114,6 +275,42 @@
             border: none;
             background: lavender;
             border-radius: 10px;
+        }
+        .dialog{
+            text-align: center;
+            width: 500px;
+            margin: 0 auto;
+            display: none;
+        }
+        .active{
+            display: block;
+        }
+        .dialog-content{
+            background: white;
+            border: 1px solid gainsboro;
+        }
+        .dialog-header{
+            background: skyblue;
+        }
+        .form-group{
+            margin-bottom: 10px;
+        }
+        .label-left{
+            width: 60px;
+            display: inline-block;
+            text-align: right;
+        }
+        .opt-right{
+            width: 200px;
+            display: inline-block;
+            text-align: left;
+        }
+        .dialog-footer{
+            margin-top: 16px;
+            margin-bottom: 16px;
+        }
+        .btn-create{
+            margin-top:20px;
         }
     </style>
 </body>
